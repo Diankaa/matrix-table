@@ -1,0 +1,90 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  align-items: end;
+}
+
+.controls-row {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.controls-row label {
+  font-size: 12px;
+  color: #666;
+}
+
+.controls input {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.15s;
+}
+
+.controls input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74,144,226,0.15);
+}
+
+.controls small {
+  font-size: 11px;
+  color: #888;
+}
+
+.controls button {
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: #4a90e2;
+  color: white;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.controls button:hover {
+  background: #3b7bcf;
+}
+
+.controls button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% - 12px);
+  color: red;
+  font-size: 13px;
+  width: 100%;
+  text-align: center;
+}
+
+.controls button {
+  width: 180px;
+  justify-self: center;
+  justify-content: center;
+}
+
+.hint {
+  opacity: 0.6;
+}
+
+.controls-bottom {
+  position: relative;
+  justify-self: center;
+  width: 100%;
+  padding-top: 15px;
+}
