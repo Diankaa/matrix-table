@@ -1,55 +1,76 @@
 import { useState } from "react";
 import { useMatrixContext } from "../hooks/useMatrixContext";
 import { generateMatrix } from "../utils/generateMatrix";
-import { clamp } from "../utils/stats";
 import "../styles/controls.css";
 
 export const Controls = () => {
-  const { table, setTable, x, setX, setTableData } = useMatrixContext();
+  const { table, setTable, x, setX, setMatrixData } = useMatrixContext();
   const { rows, cols } = table;
 
   const [error, setError] = useState<string | null>(null);
 
-  const rowNum = Number(rows);
-  const colNum = Number(cols);
+  const rowNum = rows === "" ? 0 : Number(rows);
+  const colNum = cols === "" ? 0 : Number(cols);
 
-  const maxX = rowNum > 0 && colNum > 0 ? rowNum * colNum - 1 : 0;
+  const isValidRange =
+    rows !== "" &&
+    cols !== "" &&
+    rowNum > 0 &&
+    rowNum <= 100 &&
+    colNum > 0 &&
+    colNum <= 100;
+
+  const maxX = isValidRange ? rowNum * colNum - 1 : null;
+
+  const sanitizeNumberInput = (value: string) => {
+    if (value === "") return "";
+    if (!/^\d+$/.test(value)) return null;
+    return value.replace(/^0+(?!$)/, "");
+  };
 
   const handleTableChange =
-    (min: number, max: number, key: "rows" | "cols") =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-
-      setTable((prev) => ({
-        ...prev,
-        [key]: value === "" ? "" : clamp(Number(value), min, max),
-      }));
-    };
-
-  const handleXChange =
-    (max: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-
-      if (value === "") {
-        setX("");
+    (key: "rows" | "cols") => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = sanitizeNumberInput(e.target.value);
+      if (value === null) return;
+      const numeric = Number(value);
+      if (numeric > 100) {
+        setError(
+          key === "rows"
+            ? "Rows cannot be greater than 100"
+            : "Columns cannot be greater than 100",
+        );
         return;
       }
 
-      setX(clamp(Number(value), 1, max));
+      setError(null);
+      setTable((p) => ({
+        ...p,
+        [key]: value,
+      }));
     };
 
+  const handleXChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = sanitizeNumberInput(e.target.value);
+    if (value === null) return;
+
+    const numeric = Number(value);
+
+    if (maxX !== null && numeric > maxX) {
+      setError(`Max allowed is ${maxX}`);
+      return;
+    }
+
+    setError(null);
+    setX(value);
+  };
+
   const validate = (M: number, N: number, X: number) => {
-    if (M * N < 2) {
-      return "Matrix must contain at least 2 cells for X to work";
-    }
-
-    if (X < 1) {
-      return "X must be at least 1";
-    }
-
-    if (X > M * N - 1) {
-      return `X cannot be greater than ${M * N - 1}`;
-    }
+    if (M < 0 || M > 100) return "Rows must be between 0 and 100";
+    if (N < 0 || N > 100) return "Cols must be between 0 and 100";
+    if (M * N < 2) return "Matrix must have at least 2 cells";
+    if (X < 1) return "Nearest cells must be at least 1";
+    if (maxX !== null && X > maxX)
+      return `Nearest cells cannot be greater than ${M * N - 1}`;
 
     return null;
   };
@@ -70,8 +91,7 @@ export const Controls = () => {
     setError(null);
 
     const newMatrix = generateMatrix(rowNum, colNum);
-
-    setTableData(newMatrix);
+    setMatrixData(newMatrix);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -81,39 +101,38 @@ export const Controls = () => {
   };
 
   return (
-    <div className="controls" onKeyDown={handleKeyDown}>
+    <div className="controls" onKeyDown={handleKeyDown} tabIndex={0}>
       <div className="controls-row">
-        <label htmlFor="m">Rows (M)</label>
+        <label htmlFor="m">
+          Rows <span className="hint">(0 - 100)</span>
+        </label>
         <input
           id="m"
-          type="number"
+          type="text"
           value={rows}
-          onChange={handleTableChange(0, 100, "rows")}
+          onChange={handleTableChange("rows")}
         />
       </div>
 
       <div className="controls-row">
-        <label htmlFor="n">Columns (N)</label>
+        <label htmlFor="n">
+          Columns <span className="hint">(0 - 100)</span>
+        </label>
         <input
           id="n"
-          type="number"
+          type="text"
           value={cols}
-          onChange={handleTableChange(0, 100, "cols")}
+          onChange={handleTableChange("cols")}
         />
       </div>
 
       <div className="controls-row">
         <label htmlFor="x">
-          Nearest cells (X) <span className="hint">(max: {maxX})</span>
+          Nearest cells{" "}
+          {maxX !== null && <span className="hint">(Max: {maxX})</span>}
         </label>
 
-        <input
-          id="x"
-          type="number"
-          value={x}
-          max={maxX}
-          onChange={handleXChange(maxX)}
-        />
+        <input id="x" type="text" value={x} onChange={handleXChange} />
       </div>
 
       <div className="controls-bottom">

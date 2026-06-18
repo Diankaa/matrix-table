@@ -17,22 +17,22 @@ export const Row = ({
   onCellUnhover,
   nearestCells,
 }: Props) => {
-  const { setTable, tableData, setTableData } = useMatrixContext();
+  const { setTable, matrixData, setMatrixData } = useMatrixContext();
   const [showPercentage, setShowPercentage] = useState(false);
 
   const handleRemoveRow = (id: number) => {
-    const newData = tableData.filter((item: MatrixRow) => item.id !== id);
+    const newData = matrixData.filter((item: MatrixRow) => item.id !== id);
     setTable((prev: Table) => ({
       ...prev,
-      rows: (prev.rows as number) - 1,
+      rows: String(+prev.rows - 1),
     }));
-    setTableData(newData);
+    setMatrixData(newData);
   };
 
   const handleCellClick = (rowIndex: number, colIndex: number) => {
-    const newData = [...tableData];
+    const newData = [...matrixData];
     newData[rowIndex].cells[colIndex].amount += 1;
-    setTableData(newData);
+    setMatrixData(newData);
   };
 
   const maxInRow = getRowMax(row);

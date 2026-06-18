@@ -4,14 +4,14 @@ import type { MatrixRow, Table } from "../types/matrix";
 
 export const MatrixProvider = ({ children }: { children: React.ReactNode }) => {
   const [table, setTable] = useState<Table>({
-    rows: "",
-    cols: "",
+    rows: "0",
+    cols: "0",
   });
-  const [x, setX] = useState<number | "">("");
-  const [tableData, setTableData] = useState<MatrixRow[]>([]);
+  const [x, setX] = useState<string>("0");
+  const [matrixData, setMatrixData] = useState<MatrixRow[]>([]);
   const memoizedValue = useMemo(
-    () => ({ table, setTable, tableData, setTableData, x, setX }),
-    [table, setTable, tableData, setTableData, x, setX],
+    () => ({ table, setTable, matrixData, setMatrixData, x, setX }),
+    [table, matrixData, x],
   );
   return (
     <MatrixContext.Provider value={memoizedValue}>

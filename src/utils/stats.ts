@@ -37,9 +37,9 @@ export const getColumnPercentile60 = (rows: MatrixRow[]) => {
 export const findNearestCells = (
   cell: Cell,
   x: number,
-  tableData: MatrixRow[],
+  matrixData: MatrixRow[],
 ) => {
-  const allCells = tableData.flatMap((r) => r.cells);
+  const allCells = matrixData.flatMap((r) => r.cells);
 
   return allCells
     .filter((c) => c.id !== cell.id)
@@ -50,6 +50,3 @@ export const findNearestCells = (
     .slice(0, Math.min(Number(x), allCells.length - 1))
     .map((c) => c.id);
 };
-
-export const clamp = (value: number, min: number, max: number) =>
-  Math.min(Math.max(value, min), max);

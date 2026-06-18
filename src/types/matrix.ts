@@ -12,18 +12,16 @@ export type MatrixRow = {
   cells: Cell[];
 };
 
-export type Matrix = MatrixRow[];
-
 export type Table = {
-  rows: number | "";
-  cols: number | "";
+  rows: string;
+  cols: string;
 };
 
 export type MatrixContextType = {
   table: Table;
-  tableData: MatrixRow[];
-  x: number | "";
-  setX: Dispatch<SetStateAction<number | "">>;
   setTable: Dispatch<SetStateAction<Table>>;
-  setTableData: Dispatch<SetStateAction<MatrixRow[]>>;
+  matrixData: MatrixRow[];
+  setMatrixData: Dispatch<SetStateAction<MatrixRow[]>>;
+  x: string;
+  setX: Dispatch<SetStateAction<string>>;
 };
