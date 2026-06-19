@@ -25,3 +25,7 @@ export type MatrixContextType = {
   x: string;
   setX: Dispatch<SetStateAction<string>>;
 };
+
+export type CSSVars = React.CSSProperties & {
+  [key: `--${string}`]: string | number;
+};

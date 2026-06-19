@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { MatrixRow, Table } from "../types/matrix";
+import type { CSSVars, MatrixRow, Table } from "../types/matrix";
 import { useMatrixContext } from "../hooks/useMatrixContext";
 import { getRowSum, getRowMax, getPercentage } from "../utils/stats";
 
@@ -49,19 +49,16 @@ export const Row = ({
             onMouseEnter={() => onCellHover(i)}
             onMouseLeave={() => onCellUnhover()}
             key={cell.id}
-            style={{
-              backgroundColor: nearestCells.includes(cell.id)
-                ? "#ffd166"
-                : "transparent",
-              backgroundImage: showPercentage
-                ? `linear-gradient(
-                    to bottom,
-                    lightblue ${getPercentage(cell.amount, maxInRow)}%,
-                    transparent  ${getPercentage(cell.amount, maxInRow)}%
-                  )`
-                : "none",
-              cursor: "pointer",
-            }}
+            className={`cell ${
+              nearestCells.includes(cell.id) ? "cell--highlight" : ""
+            } ${showPercentage ? "cell--gradient" : ""}`}
+            style={
+              {
+                "--p": showPercentage
+                  ? `${getPercentage(cell.amount, maxInRow)}%`
+                  : undefined,
+              } as CSSVars
+            }
           >
             {showPercentage
               ? `${getPercentage(cell.amount, rowSum)}%`

@@ -36,11 +36,6 @@
   width: 5%;
 }
 
-/* row hover */
-.table tbody tr:hover td {
-  background: #fafafa;
-}
-
 /* sum column */
 .sum-cell {
   font-weight: 700;
@@ -66,4 +61,22 @@
 /* add row btn */
 .add-btn {
   margin: 12px;
+}
+
+/* highlight (nearestCells) */
+.table tbody .cell--highlight {
+  background-color: #ffd166;
+}
+
+/* gradient через CSS variable */
+.table tbody tr:hover .cell--gradient {
+  background-image: linear-gradient(
+    to bottom,
+    lightblue var(--p),
+    transparent var(--p)
+  );
+}
+
+.cell {
+  cursor: pointer;
 }
