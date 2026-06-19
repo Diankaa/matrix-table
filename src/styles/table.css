@@ -9,8 +9,6 @@
 
 .table {
   border-collapse: collapse;
-  min-width: max-content; 
-  width: 100%;
   table-layout: fixed;
 }
 
@@ -19,6 +17,12 @@
   padding: 8px;
   text-align: center;
   white-space: nowrap;
+  width: 10%;
+  min-width: 64px;
+}
+
+.table td:last-child {
+  width: 5%;
 }
 
 /* row hover */
