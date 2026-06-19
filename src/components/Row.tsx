@@ -24,14 +24,22 @@ export const Row = ({
     const newData = matrixData.filter((item: MatrixRow) => item.id !== id);
     setTable((prev: Table) => ({
       ...prev,
-      rows: String(+prev.rows - 1),
+      rows: `${Number(prev.rows) - 1}`,
     }));
     setMatrixData(newData);
   };
 
   const handleCellClick = (rowIndex: number, colIndex: number) => {
-    const newData = [...matrixData];
-    newData[rowIndex].cells[colIndex].amount += 1;
+    const newData = matrixData.map((row, rIdx) =>
+      rIdx !== rowIndex
+        ? row
+        : {
+            ...row,
+            cells: row.cells.map((cell, cIdx) =>
+              cIdx !== colIndex ? cell : { ...cell, amount: cell.amount + 1 },
+            ),
+          },
+    );
     setMatrixData(newData);
   };
 
@@ -43,6 +51,8 @@ export const Row = ({
     <tr>
       <td>Row {rowIndex + 1}</td>
       {row.cells.map((cell, i) => {
+        const intensity =
+          showPercentage && maxInRow !== 0 ? cell.amount / maxInRow : undefined;
         return (
           <td
             onClick={() => handleCellClick(rowIndex, i)}
@@ -51,18 +61,18 @@ export const Row = ({
             key={cell.id}
             className={`cell ${
               nearestCells.includes(cell.id) ? "cell--highlight" : ""
-            } ${showPercentage ? "cell--gradient" : ""}`}
+            } ${showPercentage ? "cell--heat" : ""}`}
             style={
-              {
-                "--p": showPercentage
-                  ? `${getPercentage(cell.amount, maxInRow)}%`
-                  : undefined,
-              } as CSSVars
+              intensity !== undefined
+                ? ({ "--opacity": intensity } as CSSVars)
+                : {}
             }
           >
-            {showPercentage
-              ? `${getPercentage(cell.amount, rowSum)}%`
-              : cell.amount}
+            <span>
+              {showPercentage
+                ? `${getPercentage(cell.amount, rowSum)}%`
+                : cell.amount}
+            </span>
           </td>
         );
       })}

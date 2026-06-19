@@ -23,7 +23,7 @@ export const MatrixTable = () => {
     setMatrixData((prev) => [...prev, ...newMatrix]);
     setTable((prev: Table) => ({
       ...prev,
-      rows: String((Number(prev.rows) || 0) + 1),
+      rows: `${(Number(prev.rows) || 0) + 1}`,
     }));
   };
   const columnPercentile60 = getColumnPercentile60(matrixData);

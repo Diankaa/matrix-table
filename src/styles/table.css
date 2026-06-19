@@ -62,20 +62,26 @@
   margin: 12px;
 }
 
+.cell {
+  position: relative;
+  cursor: pointer;
+}
+
+/* heatmap */
+.cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(33, 150, 243, var(--opacity, 0));
+  pointer-events: none;
+}
+
+.cell > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* highlight (nearestCells) */
 .table tbody .cell--highlight {
   background-color: #ffd166;
-}
-
-/* gradient через CSS variable */
-.table tbody tr:hover .cell--gradient {
-  background-image: linear-gradient(
-    to bottom,
-    lightblue var(--p),
-    transparent var(--p)
-  );
-}
-
-.cell {
-  cursor: pointer;
 }

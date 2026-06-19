@@ -10,7 +10,7 @@ export const getRowMax = (row: MatrixRow) => {
 export const getPercentage = (amount: number, total: number): string => {
   if (total === 0) return "0";
 
-  return String(Number(((amount / total) * 100).toFixed(2)));
+  return `${Number(((amount / total) * 100).toFixed(2))}`;
 };
 
 export const getColumnPercentile60 = (rows: MatrixRow[]) => {
