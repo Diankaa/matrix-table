@@ -33,6 +33,15 @@ export const MatrixTable = () => {
       {!!matrixData.length && (
         <div className="table-wrapper">
           <table className="table">
+            <thead>
+              <tr>
+                <th></th>
+                {matrixData[0].cells.map((cell, i) => (
+                  <th key={cell.id}>Column {i + 1}</th>
+                ))}
+                <th>Sum values</th>
+              </tr>
+            </thead>
             <tbody>
               {matrixData.map((row: MatrixRow, i: number) => (
                 <Row
@@ -47,6 +56,7 @@ export const MatrixTable = () => {
                 />
               ))}
               <tr>
+                <td>60th percentile</td>
                 {columnPercentile60.map((avg, index) => (
                   <td key={index}>
                     <p>{avg}</p>

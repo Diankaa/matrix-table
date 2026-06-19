@@ -12,6 +12,13 @@
   table-layout: fixed;
 }
 
+.table th {
+  border: 1px solid #eee;
+  padding: 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
 .table td {
   border: 1px solid #eee;
   padding: 8px;
@@ -19,6 +26,10 @@
   white-space: nowrap;
   width: 10%;
   min-width: 64px;
+}
+
+.table td:first-child {
+  font-weight: 700;
 }
 
 .table td:last-child {

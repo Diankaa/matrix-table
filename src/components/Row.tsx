@@ -41,6 +41,7 @@ export const Row = ({
 
   return (
     <tr>
+      <td>Row {rowIndex + 1}</td>
       {row.cells.map((cell, i) => {
         return (
           <td
