@@ -1,32 +1,77 @@
-import { useState } from "react";
+// MatrixTable.tsx
 import { Row } from "./Row";
 import { useMatrixContext } from "../hooks/useMatrixContext";
-import type { MatrixRow, Table } from "../types/matrix";
-import { findNearestCells, getColumnPercentile60 } from "../utils/stats";
+import type { MatrixRow, Cell } from "../types/matrix";
+import { getColumnPercentile60, findNearestCells } from "../utils/stats";
 import { generateMatrix } from "../utils/generateMatrix";
 import "../styles/table.css";
-export const MatrixTable = () => {
-  const { table, setTable, x, matrixData, setMatrixData } = useMatrixContext();
-  const [nearestCells, setNearestCells] = useState<number[]>([]);
+import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 
-  const handleCellHover = (rowIndex: number, colIndex: number) => {
-    const cell = matrixData[rowIndex].cells[colIndex];
-    const nearest = findNearestCells(cell, Number(x), matrixData);
-    setNearestCells(nearest);
-  };
+export const MatrixTable = () => {
+  const { generatedCols, matrixData, setMatrixData, x } = useMatrixContext();
+  const [nearestCells, setNearestCells] = useState<number[]>([]);
+  const matrixDataRef = useRef(matrixData);
+
+  useEffect(() => {
+    matrixDataRef.current = matrixData;
+  }, [matrixData]);
 
   const addRow = () => {
-    if (!table.cols) return;
-
-    const newMatrix = generateMatrix(1, Number(table.cols));
-
+    if (generatedCols === 0) return null;
+    const newMatrix = generateMatrix(1, generatedCols);
     setMatrixData((prev) => [...prev, ...newMatrix]);
-    setTable((prev: Table) => ({
-      ...prev,
-      rows: `${(Number(prev.rows) || 0) + 1}`,
-    }));
   };
-  const columnPercentile60 = getColumnPercentile60(matrixData);
+  const handleRemoveRow = useCallback(
+    (id: number) => {
+      setMatrixData((prevMatrix) =>
+        prevMatrix.filter((item) => item.id !== id),
+      );
+    },
+    [setMatrixData],
+  );
+
+  const handleCellClick = useCallback(
+    (rowId: number, cellId: number) => {
+      setMatrixData((prevMatrix) =>
+        prevMatrix.map((row) => {
+          if (row.id !== rowId) return row;
+
+          return {
+            ...row,
+            cells: row.cells.map((cell) =>
+              cell.id !== cellId ? cell : { ...cell, amount: +cell.amount + 1 },
+            ),
+          };
+        }),
+      );
+    },
+    [setMatrixData],
+  );
+
+  const handleCellHover = useCallback(
+    (cell: Cell) => {
+      const nearest = findNearestCells(cell, Number(x), matrixDataRef.current);
+      setNearestCells(nearest);
+    },
+    [x],
+  );
+
+  const columnPercentile60 = useMemo(
+    () => getColumnPercentile60(matrixData),
+    [matrixData],
+  );
+
+  const handleCellUnHover = useCallback(() => {
+    setNearestCells([]);
+  }, []);
+
+  const tableHeaders = useMemo(() => {
+    if (generatedCols === 0) return null;
+
+    return Array.from({ length: generatedCols }, (_, i) => (
+      <th key={`col-header-${i}`}>Column {i + 1}</th>
+    ));
+  }, [generatedCols]);
 
   return (
     <div className="wrapper">
@@ -36,25 +81,29 @@ export const MatrixTable = () => {
             <thead>
               <tr>
                 <th></th>
-                {matrixData[0].cells.map((cell, i) => (
-                  <th key={cell.id}>Column {i + 1}</th>
-                ))}
+                {tableHeaders}
                 <th>Sum values</th>
               </tr>
             </thead>
             <tbody>
-              {matrixData.map((row: MatrixRow, i: number) => (
-                <Row
-                  key={row.id}
-                  row={row}
-                  rowIndex={i}
-                  onCellHover={(colIndex: number) =>
-                    handleCellHover(i, colIndex)
-                  }
-                  onCellUnhover={() => setNearestCells([])}
-                  nearestCells={nearestCells}
-                />
-              ))}
+              {matrixData.map((row: MatrixRow) => {
+                const highlightedInThisRow = row.cells
+                  .filter((cell) => nearestCells.includes(cell.id))
+                  .map((cell) => cell.id)
+                  .join(",");
+
+                return (
+                  <Row
+                    key={row.id}
+                    row={row}
+                    highlightedCellsString={highlightedInThisRow}
+                    onCellHover={handleCellHover}
+                    onCellUnHover={handleCellUnHover}
+                    onCellClick={handleCellClick}
+                    onRemoveRow={handleRemoveRow}
+                  />
+                );
+              })}
               <tr>
                 <td>60th percentile</td>
                 {columnPercentile60.map((avg, index) => (
@@ -63,7 +112,6 @@ export const MatrixTable = () => {
                   </td>
                 ))}
               </tr>
-              <tr></tr>
             </tbody>
           </table>
         </div>

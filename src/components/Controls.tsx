@@ -4,17 +4,19 @@ import { generateMatrix } from "../utils/generateMatrix";
 import "../styles/controls.css";
 
 export const Controls = () => {
-  const { table, setTable, x, setX, setMatrixData } = useMatrixContext();
-  const { rows, cols } = table;
+  const [localRows, setLocalRows] = useState<string>("");
+  const [localCols, setLocalCols] = useState<string>("");
+  const [localX, setLocalX] = useState<string>("0");
+  const { setGeneratedCols, setX, setMatrixData } = useMatrixContext();
 
   const [error, setError] = useState<string | null>(null);
 
-  const rowNum = rows === "" ? 0 : Number(rows);
-  const colNum = cols === "" ? 0 : Number(cols);
+  const rowNum = localRows === "" ? 0 : Number(localRows);
+  const colNum = localCols === "" ? 0 : Number(localCols);
 
   const isValidRange =
-    rows !== "" &&
-    cols !== "" &&
+    localRows !== "" &&
+    localCols !== "" &&
     rowNum > 0 &&
     rowNum <= 100 &&
     colNum > 0 &&
@@ -43,10 +45,8 @@ export const Controls = () => {
       }
 
       setError(null);
-      setTable((p) => ({
-        ...p,
-        [key]: value,
-      }));
+      if (key === "rows") setLocalRows(value);
+      if (key === "cols") setLocalCols(value);
     };
 
   const handleXChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +61,7 @@ export const Controls = () => {
     }
 
     setError(null);
-    setX(value);
+    setLocalX(value);
   };
 
   const validate = (M: number, N: number, X: number) => {
@@ -76,12 +76,12 @@ export const Controls = () => {
   };
 
   const onGenerate = () => {
-    if (rows === "" || cols === "" || x === "") {
+    if (localRows === "" || localCols === "" || localX === "") {
       setError("All fields are required");
       return;
     }
 
-    const err = validate(rowNum, colNum, Number(x));
+    const err = validate(rowNum, colNum, Number(localX));
 
     if (err) {
       setError(err);
@@ -89,6 +89,9 @@ export const Controls = () => {
     }
 
     setError(null);
+
+    setGeneratedCols(colNum);
+    setX(localX);
 
     const newMatrix = generateMatrix(rowNum, colNum);
     setMatrixData(newMatrix);
@@ -109,7 +112,7 @@ export const Controls = () => {
         <input
           id="m"
           type="text"
-          value={rows}
+          value={localRows}
           onChange={handleTableChange("rows")}
         />
       </div>
@@ -121,7 +124,7 @@ export const Controls = () => {
         <input
           id="n"
           type="text"
-          value={cols}
+          value={localCols}
           onChange={handleTableChange("cols")}
         />
       </div>
@@ -132,7 +135,7 @@ export const Controls = () => {
           {maxX !== null && <span className="hint">(Max: {maxX})</span>}
         </label>
 
-        <input id="x" type="text" value={x} onChange={handleXChange} />
+        <input id="x" type="text" value={localX} onChange={handleXChange} />
       </div>
 
       <div className="controls-bottom">

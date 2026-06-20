@@ -18,6 +18,20 @@
   white-space: nowrap;
 }
 
+.table tbody {
+  counter-reset: rowCounter;
+}
+
+.table tbody tr {
+  counter-increment: rowCounter;
+}
+.table tbody tr td.row-counter-title::before {
+  content: "Row " counter(rowCounter);
+  font-weight: bold;
+  color: #111;
+  white-space: nowrap;
+}
+
 .table td {
   border: 1px solid #eee;
   padding: 8px;

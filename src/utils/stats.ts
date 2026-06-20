@@ -40,7 +40,6 @@ export const findNearestCells = (
   matrixData: MatrixRow[],
 ) => {
   const allCells = matrixData.flatMap((r) => r.cells);
-
   return allCells
     .filter((c) => c.id !== cell.id)
     .sort(

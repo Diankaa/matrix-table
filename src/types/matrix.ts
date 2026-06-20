@@ -12,14 +12,9 @@ export type MatrixRow = {
   cells: Cell[];
 };
 
-export type Table = {
-  rows: string;
-  cols: string;
-};
-
 export type MatrixContextType = {
-  table: Table;
-  setTable: Dispatch<SetStateAction<Table>>;
+  generatedCols: number;
+  setGeneratedCols: Dispatch<SetStateAction<number>>;
   matrixData: MatrixRow[];
   setMatrixData: Dispatch<SetStateAction<MatrixRow[]>>;
   x: string;
@@ -28,4 +23,10 @@ export type MatrixContextType = {
 
 export type CSSVars = React.CSSProperties & {
   [key: `--${string}`]: string | number;
+};
+
+export type HighlightContextType = {
+  nearestCells: number[];
+  handleCellHover: (cell: Cell) => void;
+  handleCellUnHover: () => void;
 };
